@@ -1,0 +1,39 @@
+snippet exp "Exploit template"
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import socket
+import struct
+import telnetlib
+
+
+def sock(remoteip, remoteport):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((remoteip, remoteport))
+    f = s.makefile('rw', bufsize=0)
+    return s, f
+
+
+def read_until(f, delim='\n'):
+    data = ''
+    while not data.endswith(delim):
+        data += f.read(1)
+    return data
+
+
+def p(a):
+    return struct.pack("<I", a)
+
+
+def u(a):
+    return struct.unpack("<I", a)[0]
+
+
+def shell(s):
+    t = telnetlib.Telnet()
+    t.sock = s
+    t.interact()
+
+s, f = sock('localhost', 4444)
+
+shell(s)
+endsnippet
